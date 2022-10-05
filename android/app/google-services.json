@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "557782435912",
+    "project_id": "emailandpasswordauth-7122b",
+    "storage_bucket": "emailandpasswordauth-7122b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:557782435912:android:4cebd7a34abe24dcdcb07d",
+        "android_client_info": {
+          "package_name": "com.example.firebase_authentication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "557782435912-uoo9hc2t2r51s6ft7h9mbdcd3h1iivld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-NNKYP66QMijd1OQts4dKbo6MrUgS5Vc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "557782435912-uoo9hc2t2r51s6ft7h9mbdcd3h1iivld.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
