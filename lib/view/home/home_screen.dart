@@ -1,6 +1,5 @@
 import 'package:firebase_authentication/constants/sizedboxes.dart';
 import 'package:firebase_authentication/controller/home/home_controller.dart';
-import 'package:firebase_authentication/controller/login/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,11 +9,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final homeProvider = Provider.of<HomeProvider>(context, listen: false);
-    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      homeProvider.getData();
-    });
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Welcome'),
@@ -22,9 +16,9 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             onPressed: () => homeProvider.goToSettingsPage(context),
             icon: const Icon(
-              Icons.account_circle,
+              Icons.settings,
               color: Colors.black,
-              size: 40,
+              size: 30,
             ),
           ),
           SizedBoxes.sizedboxW10,
@@ -44,14 +38,6 @@ class HomeScreen extends StatelessWidget {
                       SizedBoxes.sizedboxH25,
                       Text(values.loggedInUserModel!.firstName!),
                       SizedBoxes.sizedboxH25,
-                      ElevatedButton(
-                        onPressed: () {
-                          homeProvider.signOut(context);
-                          loginProvider.emailController.clear();
-                          loginProvider.passwordController.clear();
-                        },
-                        child: const Text('Sign Out'),
-                      ),
                     ],
                   );
           },

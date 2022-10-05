@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_authentication/model/signup/user_model.dart';
-import 'package:firebase_authentication/view/settings/settings.dart';
+import 'package:firebase_authentication/view/settings/settings_screen.dart';
 import 'package:firebase_authentication/view/login/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeProvider with ChangeNotifier {
+  HomeProvider() {
+    getData();
+  }
   User? user = FirebaseAuth.instance.currentUser;
   UserModel? loggedInUserModel;
 
@@ -22,9 +25,7 @@ class HomeProvider with ChangeNotifier {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SettingsScreen(
-          userEmail: loggedInUserModel!.email!,
-        ),
+        builder: (context) => const SettingsScreen(),
       ),
     );
   }

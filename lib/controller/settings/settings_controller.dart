@@ -1,13 +1,13 @@
-import 'dart:developer';
 import 'dart:io';
 
+import 'package:firebase_authentication/services/profile_picture_and_details_update/profile_and_details_update.dart';
 import 'package:firebase_authentication/view/settings/widgets/image_picker_widget.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SettingsProvider with ChangeNotifier {
   File? img;
+  String? downloadUrl;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   void getImage(ImageSource source) async {
@@ -30,13 +30,17 @@ class SettingsProvider with ChangeNotifier {
     );
   }
 
-  Future<void> uploadImage(email) async {
-    final profileId = DateTime.now().microsecondsSinceEpoch.toString();
-    Reference ref = FirebaseStorage.instance
-        .ref()
-        .child('$email/profile_picture')
-        .child('profile_$profileId');
-    log(img!.toString());
-    await ref.putFile(img!);
+  Future<void> updateData() async {
+    // if (img != null) {
+    //   await ProfileAndDetailsUpdateService().uploadOrUpdateImage(img);
+    // }
+    await ProfileAndDetailsUpdateService()
+        .updateEmailAndUserName(emailController.text, nameController.text);
+    notifyListeners();
+  }
+
+  Future<void> getProfleImage() async {
+    downloadUrl = await ProfileAndDetailsUpdateService().getProfilePic();
+    notifyListeners();
   }
 }
