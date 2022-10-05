@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_authentication/view/home/home_screen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,23 +21,45 @@ class ProfileAndDetailsUpdateService {
     }
   }
 
-  Future<void> updateEmailAndUserName(newEmail, newUserName) async {
+  Future<void> updateEmailAndUserName(
+      newEmail, newUserName, password, context) async {
     try {
-      await FirebaseAuth.instance.currentUser
-          ?.updateEmail(newEmail)
+      final cred = EmailAuthProvider.credential(
+          email: auth.currentUser!.email!, password: password);
+      await FirebaseAuth.instance.currentUser!
+          .reauthenticateWithCredential(cred)
           .then((value) async {
-        await FirebaseFirestore.instance
-            .collection('Users')
-            .doc(auth.currentUser!.uid)
-            .update(
-          {
-            'email': newEmail,
-            'firstName': newUserName,
-          },
-        );
-      });
+            await FirebaseAuth.instance.currentUser
+                ?.updateEmail(newEmail)
+                .then((value) async {
+              await FirebaseFirestore.instance
+                  .collection('Users')
+                  .doc(auth.currentUser!.uid)
+                  .update(
+                {
+                  "email": newEmail,
+                  "firstName": newUserName,
+                },
+              );
+            });
+          })
+          .then(
+            (value) => Fluttertoast.showToast(
+              msg: 'Updation Successfull',
+              backgroundColor: Colors.green,
+            ),
+          )
+          .then((value) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              ),
+            );
+          });
+    } on FirebaseAuthException catch (e) {
+      errorCheck(e);
     } catch (e) {
-      Fluttertoast.showToast(msg: e.toString());
+      throw Exception(e.toString());
     }
   }
 
@@ -53,5 +76,20 @@ class ProfileAndDetailsUpdateService {
       Fluttertoast.showToast(msg: e.toString(), backgroundColor: Colors.red);
     }
     return null;
+  }
+
+  void errorCheck(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-email':
+        Fluttertoast.showToast(
+            msg: 'Invalid Email Address', backgroundColor: Colors.red);
+        break;
+      case 'wrong-password':
+        Fluttertoast.showToast(
+            msg: 'Password Incorrect', backgroundColor: Colors.red);
+        break;
+      default:
+        Fluttertoast.showToast(msg: e.message!, backgroundColor: Colors.red);
+    }
   }
 }

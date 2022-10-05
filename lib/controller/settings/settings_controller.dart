@@ -10,6 +10,8 @@ class SettingsProvider with ChangeNotifier {
   String? downloadUrl;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   void getImage(ImageSource source) async {
     final image = await ImagePicker().pickImage(source: source);
     if (image == null) {
@@ -30,12 +32,24 @@ class SettingsProvider with ChangeNotifier {
     );
   }
 
-  Future<void> updateData() async {
-    // if (img != null) {
-    //   await ProfileAndDetailsUpdateService().uploadOrUpdateImage(img);
-    // }
-    await ProfileAndDetailsUpdateService()
-        .updateEmailAndUserName(emailController.text, nameController.text);
+  String? passwordValidation(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Enter you password';
+    }
+    return null;
+  }
+
+  Future<void> updateData(context, FormState currentState) async {
+    if (currentState.validate()) {
+      if (img != null) {
+        await ProfileAndDetailsUpdateService().uploadOrUpdateImage(img);
+      }
+      await ProfileAndDetailsUpdateService().updateEmailAndUserName(
+          emailController.text,
+          nameController.text,
+          passwordController.text,
+          context);
+    }
     notifyListeners();
   }
 

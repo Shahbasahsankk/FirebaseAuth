@@ -25,7 +25,7 @@ class HomeProvider with ChangeNotifier {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const SettingsScreen(),
+        builder: (context) => SettingsScreen(),
       ),
     );
   }
