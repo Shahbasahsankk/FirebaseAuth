@@ -6,10 +6,9 @@ import 'package:provider/provider.dart';
 import '../../constants/sizedboxes.dart';
 import '../../controller/signup/signup_controller.dart';
 
-// ignore: must_be_immutable
 class SignUpScreen extends StatelessWidget {
   SignUpScreen({super.key});
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     final signUpProvider = Provider.of<SignUpProvider>(context, listen: false);

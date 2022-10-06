@@ -1,26 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_authentication/model/signup/user_model.dart';
+import 'package:firebase_authentication/model/addStudent/student_model.dart';
+import 'package:firebase_authentication/model/screen_check/screen_check_enum.dart';
+import 'package:firebase_authentication/services/home/home_service.dart';
+import 'package:firebase_authentication/view/add_student/add_student_screen.dart';
 import 'package:firebase_authentication/view/settings/settings_screen.dart';
-import 'package:firebase_authentication/view/login/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeProvider with ChangeNotifier {
   HomeProvider() {
-    getData();
+    getStudents();
   }
   User? user = FirebaseAuth.instance.currentUser;
-  UserModel? loggedInUserModel;
 
-  void goToLoginPage(context) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LoginScreen(),
-      ),
-    );
-  }
-
+  List<StudentModel> studentList = [];
   void goToSettingsPage(context) {
     Navigator.push(
       context,
@@ -30,23 +22,29 @@ class HomeProvider with ChangeNotifier {
     );
   }
 
-//  User data from firestore
-  void getData() async {
-    await FirebaseFirestore.instance
-        .collection('Users')
-        .doc(user!.uid)
-        .get()
-        .then((value) {
-      loggedInUserModel = UserModel.fromMap(
-        value.data(),
-      );
-    });
-    notifyListeners();
+  void goToAddStudentScreen(context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AddStudentScreen(
+          type: ActionType.addStudetnt,
+        ),
+      ),
+    );
   }
 
-// user signout
-  Future<void> signOut(BuildContext context) async {
-    goToLoginPage(context);
-    await FirebaseAuth.instance.signOut();
+  void goToEditStudentScreen(context, model) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AddStudentScreen(
+          type: ActionType.studentView,
+          model: model,
+        ),
+      ),
+    );
+  }
+
+  Future<void> getStudents() async {
+    studentList = await HomeService().getData();
+    notifyListeners();
   }
 }

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_authentication/model/signup/user_model.dart';
 import 'package:firebase_authentication/view/home/home_screen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -91,5 +92,24 @@ class ProfileAndDetailsUpdateService {
       default:
         Fluttertoast.showToast(msg: e.message!, backgroundColor: Colors.red);
     }
+  }
+
+  Future<UserModel?> getData() async {
+    UserModel? usermMdel;
+    try {
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(auth.currentUser!.uid)
+          .get()
+          .then((value) {
+        usermMdel = UserModel.fromMap(
+          value.data(),
+        );
+      });
+      return usermMdel;
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
+    return null;
   }
 }

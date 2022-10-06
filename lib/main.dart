@@ -1,3 +1,4 @@
+import 'package:firebase_authentication/controller/student_add_edit_delete/student_add_edit_delete_controller.dart';
 import 'package:firebase_authentication/controller/home/home_controller.dart';
 import 'package:firebase_authentication/controller/login/login_controller.dart';
 import 'package:firebase_authentication/controller/settings/settings_controller.dart';
@@ -21,11 +22,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: ((context) => LoginProvider())),
+        ChangeNotifierProvider(create: (context) => LoginProvider()),
         ChangeNotifierProvider(create: (context) => SignUpProvider()),
         ChangeNotifierProvider(create: (context) => HomeProvider()),
         ChangeNotifierProvider(create: (context) => SplashProvider()),
         ChangeNotifierProvider(create: (context) => SettingsProvider()),
+        ChangeNotifierProvider(create: (context) => StudentProvider()),
       ],
       child: MaterialApp(
         theme: ThemeData(

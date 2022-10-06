@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:firebase_authentication/constants/sizedboxes.dart';
-import 'package:firebase_authentication/controller/home/home_controller.dart';
 import 'package:firebase_authentication/controller/login/login_controller.dart';
 import 'package:firebase_authentication/controller/settings/settings_controller.dart';
 import 'package:firebase_authentication/view/settings/widgets/formfields.dart';
@@ -9,25 +8,23 @@ import 'package:firebase_authentication/view/signup/widgets/form_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
 class SettingsScreen extends StatelessWidget {
   SettingsScreen({super.key});
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
     final settingsProvider =
         Provider.of<SettingsProvider>(context, listen: false);
-    final homeProvier = Provider.of<HomeProvider>(context, listen: false);
     settingsProvider.passwordController.clear();
     settingsProvider.emailController.clear();
     settingsProvider.nameController.clear();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await settingsProvider.getProfleImage();
       settingsProvider.nameController.text =
-          homeProvier.loggedInUserModel!.firstName!;
+          settingsProvider.loggedInUserModel?.firstName ?? "";
       settingsProvider.emailController.text =
-          homeProvier.loggedInUserModel!.email!;
+          settingsProvider.loggedInUserModel?.email ?? "";
     });
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +40,7 @@ class SettingsScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              homeProvier.signOut(context);
+              settingsProvider.signOut(context);
               loginProvider.emailController.clear();
               loginProvider.passwordController.clear();
             },
@@ -130,7 +127,7 @@ class SettingsScreen extends StatelessWidget {
                       await settingsProvider
                           .updateData(context, formKey.currentState!)
                           .then((value) {
-                        homeProvier.getData();
+                        settingsProvider.getUserData();
                       });
                     },
                     child: const Text('Save'),
