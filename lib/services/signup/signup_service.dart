@@ -23,9 +23,6 @@ class SignUpService {
       ).then((_) async {
         await FirebaseAuth.instance.signOut();
       });
-      Fluttertoast.showToast(
-          msg: 'SignUp Successful', backgroundColor: Colors.green);
-      signUpProvider.toLoginScreen(context);
     } on FirebaseAuthException catch (e) {
       errorCheck(e);
     } catch (e) {
@@ -37,7 +34,6 @@ class SignUpService {
     try {
       FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
       User? user = auth.currentUser;
-
       UserModel userModel = UserModel(
         uid: user!.uid,
         email: user.email,

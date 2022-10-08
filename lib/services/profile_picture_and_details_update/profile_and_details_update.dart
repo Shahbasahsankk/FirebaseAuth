@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_authentication/model/signup/user_model.dart';
-import 'package:firebase_authentication/view/home/home_screen.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -29,34 +28,23 @@ class ProfileAndDetailsUpdateService {
           email: auth.currentUser!.email!, password: password);
       await FirebaseAuth.instance.currentUser!
           .reauthenticateWithCredential(cred)
-          .then((value) async {
-            await FirebaseAuth.instance.currentUser
-                ?.updateEmail(newEmail)
-                .then((value) async {
-              await FirebaseFirestore.instance
-                  .collection('Users')
-                  .doc(auth.currentUser!.uid)
-                  .update(
-                {
-                  "email": newEmail,
-                  "firstName": newUserName,
-                },
-              );
-            });
-          })
           .then(
-            (value) => Fluttertoast.showToast(
-              msg: 'Updation Successfull',
-              backgroundColor: Colors.green,
-            ),
-          )
-          .then((value) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => const HomeScreen(),
-              ),
+        (value) async {
+          await FirebaseAuth.instance.currentUser
+              ?.updateEmail(newEmail)
+              .then((value) async {
+            await FirebaseFirestore.instance
+                .collection('Users')
+                .doc(auth.currentUser!.uid)
+                .update(
+              {
+                "email": newEmail,
+                "firstName": newUserName,
+              },
             );
           });
+        },
+      );
     } on FirebaseAuthException catch (e) {
       errorCheck(e);
     } catch (e) {

@@ -4,10 +4,10 @@ import 'package:firebase_authentication/view/login/widgets/email_and_password_te
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
@@ -54,15 +54,21 @@ class LoginScreen extends StatelessWidget {
                           loginProvider.passwordValidation(value),
                     ),
                     SizedBoxes.sizedboxH15,
-                    ElevatedButton(
-                      onPressed: () async => await loginProvider.signIn(
-                        loginProvider.emailController.text,
-                        loginProvider.passwordController.text,
-                        context,
-                        formKey.currentState!,
-                      ),
-                      child: const Text('Log In'),
-                    ),
+                    Consumer<LoginProvider>(builder: (context, values, _) {
+                      return values.isLoading == true
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ElevatedButton(
+                              onPressed: () async => await loginProvider.signIn(
+                                loginProvider.emailController.text,
+                                loginProvider.passwordController.text,
+                                context,
+                                formKey.currentState!,
+                              ),
+                              child: const Text('Log In'),
+                            );
+                    }),
                     SizedBoxes.sizedboxH5,
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

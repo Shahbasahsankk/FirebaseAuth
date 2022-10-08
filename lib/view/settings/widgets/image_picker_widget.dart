@@ -4,9 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ImagePickerWidget extends StatelessWidget {
-  const ImagePickerWidget({
-    super.key,
-  });
+  const ImagePickerWidget({super.key});
   @override
   Widget build(BuildContext context) {
     return Center(

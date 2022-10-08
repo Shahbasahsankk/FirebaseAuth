@@ -4,6 +4,7 @@ class StudentModel {
   String? domain;
   String? age;
   String? number;
+  String? studentImageUrl;
 
   StudentModel({
     required this.uid,
@@ -11,16 +12,17 @@ class StudentModel {
     required this.domain,
     required this.age,
     required this.number,
+    required this.studentImageUrl,
   });
   // data from server
   factory StudentModel.fromMap(map) {
     return StudentModel(
-      uid: map['uid'],
-      name: map['name'],
-      domain: map['domain'],
-      age: map['age'],
-      number: map['number'],
-    );
+        uid: map['uid'],
+        name: map['name'],
+        domain: map['domain'],
+        age: map['age'],
+        number: map['number'],
+        studentImageUrl: map['studentImageUrl']);
   }
   // data to server
   Map<String, dynamic> toMap() {
@@ -30,6 +32,7 @@ class StudentModel {
       'domain': domain,
       'age': age,
       'number': number,
+      'studentImageUrl': studentImageUrl,
     };
   }
 }

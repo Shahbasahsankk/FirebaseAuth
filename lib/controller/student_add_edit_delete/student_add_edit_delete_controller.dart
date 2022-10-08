@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_authentication/model/addStudent/student_model.dart';
 import 'package:firebase_authentication/model/screen_check/screen_check_enum.dart';
 import 'package:firebase_authentication/services/add_edit_delete_student/add_edit_delete_student_service.dart';
 import 'package:firebase_authentication/view/home/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class StudentProvider with ChangeNotifier {
   final TextEditingController nameController = TextEditingController();
@@ -11,6 +14,9 @@ class StudentProvider with ChangeNotifier {
   final TextEditingController domainController = TextEditingController();
   final TextEditingController numberController = TextEditingController();
   final auth = FirebaseAuth.instance;
+  String? donwloadUrl;
+  File? img;
+  bool isLoading = false;
 
   String? nameAndDomainValidation(String? value, String text) {
     if (value == null || value.isEmpty) {
@@ -43,37 +49,68 @@ class StudentProvider with ChangeNotifier {
       domainController.text = model.domain!;
       ageController.text = model.age!;
       numberController.text = model.number!;
+      donwloadUrl = model.studentImageUrl;
     }
+    notifyListeners();
   }
 
-  void addStudent(FormState currentState, context) {
-    if (currentState.validate()) {
-      StudentServices().postStudentDetailsToFirestore(
+  void addStudent(FormState currentState, context, img) async {
+    if (img == null) {
+      Fluttertoast.showToast(
+          msg: 'Pick and Image', backgroundColor: Colors.red);
+    }
+    if (currentState.validate() && img != null) {
+      isLoading = true;
+      notifyListeners();
+      await StudentServices()
+          .postStudentDetailsToFirestore(
         nameController.text,
         domainController.text,
         ageController.text,
         numberController.text,
-      );
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
-        ),
-      );
+        img,
+        donwloadUrl,
+      )
+          .then((value) {
+        isLoading = false;
+        notifyListeners();
+        Navigator.of(context).pushAndRemoveUntil(
+            (MaterialPageRoute(
+              builder: (context) => const HomeScreen(),
+            )),
+            (route) => false);
+      });
     }
   }
 
-  void deleteStudent(studentId) async {
-    StudentServices().deleteStudent(studentId);
-  }
-
-  void updateStudent(FormState currentState, studentId, context) async {
-    if (currentState.validate()) {
-      StudentServices().updateStudent(studentId, nameController.text,
-          domainController.text, ageController.text, numberController.text);
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
-        ),
+  void updateStudent(FormState currentState, studentId, context, img) async {
+    if (img == null) {
+      Fluttertoast.showToast(
+          msg: 'Pick and Image', backgroundColor: Colors.red);
+    }
+    if (currentState.validate() && img != null) {
+      isLoading = true;
+      notifyListeners();
+      await StudentServices()
+          .updateStudent(
+        studentId,
+        nameController.text,
+        domainController.text,
+        ageController.text,
+        numberController.text,
+        img,
+        donwloadUrl,
+      )
+          .then(
+        (value) {
+          isLoading = false;
+          notifyListeners();
+          Navigator.of(context).pushAndRemoveUntil(
+              (MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              )),
+              (route) => false);
+        },
       );
     }
   }

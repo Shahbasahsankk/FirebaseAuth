@@ -8,17 +8,10 @@ class LoginService {
   Future<void> loginUser(context, email, password) async {
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
     try {
-      await loginProvider.auth
-          .signInWithEmailAndPassword(
-            email: email,
-            password: password,
-          )
-          .then((uid) => {
-                Fluttertoast.showToast(
-                    msg: 'Logged in Successfully',
-                    backgroundColor: Colors.green),
-                loginProvider.toHomeScreen(context)
-              });
+      await loginProvider.auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
     } on FirebaseAuthException catch (e) {
       errorCheck(e);
     } catch (e) {

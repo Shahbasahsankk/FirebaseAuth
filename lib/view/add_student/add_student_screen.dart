@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_authentication/constants/sizedboxes.dart';
 import 'package:firebase_authentication/controller/student_add_edit_delete/student_add_edit_delete_controller.dart';
 import 'package:firebase_authentication/controller/home/home_controller.dart';
@@ -7,6 +9,9 @@ import 'package:firebase_authentication/view/signup/widgets/form_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../controller/settings/settings_controller.dart';
+
+// ignore: must_be_immutable
 class AddStudentScreen extends StatelessWidget {
   AddStudentScreen({
     super.key,
@@ -21,6 +26,9 @@ class AddStudentScreen extends StatelessWidget {
     final addStundentProvider =
         Provider.of<StudentProvider>(context, listen: false);
     final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+    final settingsProvider =
+        Provider.of<SettingsProvider>(context, listen: false);
+    settingsProvider.img = null;
     addStundentProvider.nameController.clear();
     addStundentProvider.domainController.clear();
     addStundentProvider.ageController.clear();
@@ -53,6 +61,42 @@ class AddStudentScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Consumer2<SettingsProvider, StudentProvider>(
+                      builder: (context, settingsProvidervalues,
+                          studentProviderValues, _) {
+                        return Stack(
+                          children: [
+                            settingsProvidervalues.img == null
+                                ? studentProviderValues.donwloadUrl != null
+                                    ? CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            studentProviderValues.donwloadUrl!),
+                                        radius: 60,
+                                      )
+                                    : const CircleAvatar(
+                                        backgroundColor: Colors.grey,
+                                        radius: 60,
+                                      )
+                                : CircleAvatar(
+                                    backgroundImage: FileImage(
+                                      File(settingsProvidervalues.img!.path),
+                                    ),
+                                    radius: 60,
+                                  ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 35, top: 105),
+                              child: IconButton(
+                                onPressed: () =>
+                                    settingsProvidervalues.imagepicker(context),
+                                icon: const Icon(Icons.add_a_photo),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    SizedBoxes.sizedboxH25,
                     SignUpFormFields(
                       controller: addStundentProvider.nameController,
                       hint: 'Student Name',
@@ -92,25 +136,35 @@ class AddStudentScreen extends StatelessWidget {
                       obscure: false,
                       keyboardType: TextInputType.phone,
                       action: TextInputAction.done,
-                      icon: Icons.vpn_key,
+                      icon: Icons.phone,
                       validator: (value) =>
                           addStundentProvider.numberValidation(value),
                     ),
                     SizedBoxes.sizedboxH15,
-                    ElevatedButton(
-                      onPressed: () {
-                        type == ActionType.addStudetnt
-                            ? addStundentProvider.addStudent(
-                                formKey.currentState!, context)
-                            : addStundentProvider.updateStudent(
-                                formKey.currentState!,
-                                model!.uid,
-                                context,
-                              );
-                        homeProvider.getStudents();
-                      },
-                      child: const Text('Add'),
-                    ),
+                    Consumer<StudentProvider>(builder: (context, values, _) {
+                      return values.isLoading == true
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ElevatedButton(
+                              onPressed: () async {
+                                type == ActionType.addStudetnt
+                                    ? values.addStudent(
+                                        formKey.currentState!,
+                                        context,
+                                        settingsProvider.img,
+                                      )
+                                    : values.updateStudent(
+                                        formKey.currentState!,
+                                        model!.uid,
+                                        context,
+                                        settingsProvider.img,
+                                      );
+                                await homeProvider.getStudents();
+                              },
+                              child: const Text('Add'),
+                            );
+                    }),
                     SizedBoxes.sizedboxH5,
                   ],
                 ),

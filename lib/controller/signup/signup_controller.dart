@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_authentication/services/signup/signup_service.dart';
 import 'package:firebase_authentication/view/login/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class SignUpProvider with ChangeNotifier {
   final TextEditingController firstNameController = TextEditingController();
@@ -11,6 +12,7 @@ class SignUpProvider with ChangeNotifier {
   final TextEditingController confirmPasswordController =
       TextEditingController();
   final auth = FirebaseAuth.instance;
+  bool isLoading = false;
 
   void toLoginScreen(context) {
     Navigator.pushReplacement(
@@ -56,7 +58,15 @@ class SignUpProvider with ChangeNotifier {
   void signUp(
       FormState currentState, context, email, password, firstName) async {
     if (currentState.validate()) {
-      SignUpService().signup(context, email, password, firstName);
+      isLoading = true;
+      notifyListeners();
+      SignUpService().signup(context, email, password, firstName).then((value) {
+        isLoading = false;
+        notifyListeners();
+        Fluttertoast.showToast(
+            msg: 'SignUp Successful', backgroundColor: Colors.green);
+        toLoginScreen(context);
+      });
     }
   }
 }

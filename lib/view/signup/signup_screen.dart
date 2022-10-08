@@ -88,20 +88,26 @@ class SignUpScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBoxes.sizedboxH15,
-                    ElevatedButton(
-                      onPressed: () {
-                        signUpProvider.signUp(
-                          formKey.currentState!,
-                          context,
-                          signUpProvider.emailController.text,
-                          signUpProvider.passwordController.text,
-                          signUpProvider.firstNameController.text,
-                        );
-                        loginProvider.emailController.clear();
-                        loginProvider.passwordController.clear();
-                      },
-                      child: const Text('Sign Up'),
-                    ),
+                    Consumer<SignUpProvider>(builder: (context, values, _) {
+                      return values.isLoading == true
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ElevatedButton(
+                              onPressed: () {
+                                signUpProvider.signUp(
+                                  formKey.currentState!,
+                                  context,
+                                  signUpProvider.emailController.text,
+                                  signUpProvider.passwordController.text,
+                                  signUpProvider.firstNameController.text,
+                                );
+                                loginProvider.emailController.clear();
+                                loginProvider.passwordController.clear();
+                              },
+                              child: const Text('Sign Up'),
+                            );
+                    }),
                     SizedBoxes.sizedboxH5,
                   ],
                 ),
