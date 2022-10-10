@@ -71,15 +71,17 @@ class StudentProvider with ChangeNotifier {
         img,
         donwloadUrl,
       )
-          .then((value) {
-        isLoading = false;
-        notifyListeners();
-        Navigator.of(context).pushAndRemoveUntil(
-            (MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
-            )),
-            (route) => false);
-      });
+          .then(
+        (value) {
+          isLoading = false;
+          notifyListeners();
+          Navigator.of(context).pushAndRemoveUntil(
+              (MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              )),
+              (route) => false);
+        },
+      );
     }
   }
 

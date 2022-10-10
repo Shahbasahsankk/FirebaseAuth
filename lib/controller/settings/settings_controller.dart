@@ -22,7 +22,7 @@ class SettingsProvider with ChangeNotifier {
   final TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   UserModel? loggedInUserModel;
-  bool isLoading = false;
+  bool saving = false;
   bool userDataLoading = false;
 
   void getImage(ImageSource source) async {
@@ -47,14 +47,14 @@ class SettingsProvider with ChangeNotifier {
 
   String? passwordValidation(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Enter you password';
+      return 'Enter your password';
     }
     return null;
   }
 
   Future<void> updateData(context, FormState currentState) async {
     if (currentState.validate()) {
-      isLoading = true;
+      saving = true;
       notifyListeners();
       if (img != null) {
         await ProfileAndDetailsUpdateService().uploadOrUpdateImage(img);
@@ -68,8 +68,9 @@ class SettingsProvider with ChangeNotifier {
       )
           .then(
         (value) {
-          isLoading = false;
+          saving = false;
           notifyListeners();
+          getUserData();
           Fluttertoast.showToast(
             msg: 'Updation Successfull',
             backgroundColor: Colors.green,
@@ -107,10 +108,12 @@ class SettingsProvider with ChangeNotifier {
   Future<void> signOut(BuildContext context) async {
     userDataLoading = true;
     notifyListeners();
-    await FirebaseAuth.instance.signOut().then((value) {
-      userDataLoading = false;
-      notifyListeners();
-      goToLoginPage(context);
-    });
+    await FirebaseAuth.instance.signOut().then(
+      (value) {
+        userDataLoading = false;
+        notifyListeners();
+        goToLoginPage(context);
+      },
+    );
   }
 }

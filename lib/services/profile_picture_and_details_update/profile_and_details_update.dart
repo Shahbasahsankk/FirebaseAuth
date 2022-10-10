@@ -61,6 +61,18 @@ class ProfileAndDetailsUpdateService {
           .child('profile_${auth.currentUser!.uid}');
       url = await ref.getDownloadURL();
       return url;
+    } on FirebaseException catch (e) {
+      switch (e.code) {
+        case 'storage/unknown':
+          Fluttertoast.showToast(
+              msg: 'Unknown error occured', backgroundColor: Colors.red);
+          break;
+        case 'firebase_storage/object-not-found':
+          Fluttertoast.showToast(msg: 'No image found');
+          break;
+        default:
+          return null;
+      }
     } catch (e) {
       Fluttertoast.showToast(msg: e.toString(), backgroundColor: Colors.red);
     }

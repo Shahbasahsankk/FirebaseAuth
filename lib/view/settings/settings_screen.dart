@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:firebase_authentication/constants/sizedboxes.dart';
+import 'package:firebase_authentication/controller/home/home_controller.dart';
 import 'package:firebase_authentication/controller/login/login_controller.dart';
 import 'package:firebase_authentication/controller/settings/settings_controller.dart';
 import 'package:firebase_authentication/view/settings/widgets/formfields.dart';
@@ -16,16 +17,20 @@ class SettingsScreen extends StatelessWidget {
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
     final settingsProvider =
         Provider.of<SettingsProvider>(context, listen: false);
+    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
     settingsProvider.passwordController.clear();
     settingsProvider.emailController.clear();
     settingsProvider.nameController.clear();
     settingsProvider.img = null;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text('Settings'),
         centerTitle: true,
         leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () async {
+            Navigator.pop(context);
+            await homeProvider.getStudents();
+          },
           icon: const Icon(
             Icons.arrow_back,
             color: Colors.black,
@@ -57,6 +62,8 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   )
                 : Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
                     color: Colors.white,
                     child: Padding(
                       padding: const EdgeInsets.all(36.0),
@@ -115,7 +122,7 @@ class SettingsScreen extends StatelessWidget {
                             SizedBoxes.sizedboxH25,
                             SignUpFormFields(
                               controller: values.passwordController,
-                              hint: 'Enter your password',
+                              hint: 'Enter password to save',
                               obscure: true,
                               keyboardType: TextInputType.text,
                               action: TextInputAction.next,
@@ -124,18 +131,14 @@ class SettingsScreen extends StatelessWidget {
                                   values.passwordValidation(value),
                             ),
                             SizedBoxes.sizedboxH15,
-                            values.isLoading == true
+                            values.saving == true
                                 ? const Center(
                                     child: CircularProgressIndicator(),
                                   )
                                 : ElevatedButton(
                                     onPressed: () async {
-                                      await settingsProvider
-                                          .updateData(
-                                              context, formKey.currentState!)
-                                          .then((value) {
-                                        settingsProvider.getUserData();
-                                      });
+                                      await values.updateData(
+                                          context, formKey.currentState!);
                                     },
                                     child: const Text('Save'),
                                   ),

@@ -42,7 +42,10 @@ class AddStudentScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () async {
+            Navigator.pop(context);
+            await homeProvider.getStudents();
+          },
           icon: const Icon(
             Icons.arrow_back,
             color: Colors.black,
@@ -141,30 +144,32 @@ class AddStudentScreen extends StatelessWidget {
                           addStundentProvider.numberValidation(value),
                     ),
                     SizedBoxes.sizedboxH15,
-                    Consumer<StudentProvider>(builder: (context, values, _) {
-                      return values.isLoading == true
-                          ? const Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : ElevatedButton(
-                              onPressed: () async {
-                                type == ActionType.addStudetnt
-                                    ? values.addStudent(
-                                        formKey.currentState!,
-                                        context,
-                                        settingsProvider.img,
-                                      )
-                                    : values.updateStudent(
-                                        formKey.currentState!,
-                                        model!.uid,
-                                        context,
-                                        settingsProvider.img,
-                                      );
-                                await homeProvider.getStudents();
-                              },
-                              child: const Text('Add'),
-                            );
-                    }),
+                    Consumer<StudentProvider>(
+                      builder: (context, values, _) {
+                        return values.isLoading == true
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : ElevatedButton(
+                                onPressed: () async {
+                                  type == ActionType.addStudetnt
+                                      ? values.addStudent(
+                                          formKey.currentState!,
+                                          context,
+                                          settingsProvider.img,
+                                        )
+                                      : values.updateStudent(
+                                          formKey.currentState!,
+                                          model!.uid,
+                                          context,
+                                          settingsProvider.img,
+                                        );
+                                  await homeProvider.getStudents();
+                                },
+                                child: const Text('Add'),
+                              );
+                      },
+                    ),
                     SizedBoxes.sizedboxH5,
                   ],
                 ),
